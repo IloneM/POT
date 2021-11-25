@@ -1208,6 +1208,11 @@ def entropic_gromov_wasserstein(C1, C2, p, q, loss_fun, epsilon,
     if log:
         log = {'err': []}
 
+    if verbose and isinstance(verbose, int):
+        freqprint = verbose
+    else:
+        freqprint = 10
+        
     while (err > tol and cpt < max_iter):
 
         Tprev = T
@@ -1217,7 +1222,7 @@ def entropic_gromov_wasserstein(C1, C2, p, q, loss_fun, epsilon,
 
         T = sinkhorn(p, q, tens, epsilon, method='sinkhorn')
 
-        if cpt % 10 == 0:
+        if cpt % freqprint == 0:
             # we can speed up the process by checking for the error only all
             # the 10th iterations
             err = nx.norm(T - Tprev)
@@ -1226,7 +1231,7 @@ def entropic_gromov_wasserstein(C1, C2, p, q, loss_fun, epsilon,
                 log['err'].append(err)
 
             if verbose:
-                if cpt % 200 == 0:
+                if cpt % (freqprint * 20) == 0:
                     print('{:5s}|{:12s}'.format(
                         'It.', 'Err') + '\n' + '-' * 19)
                 print('{:5d}|{:8e}|'.format(cpt, err))
